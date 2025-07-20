@@ -1,4 +1,6 @@
-streamlit
+cmake
+fastapi
+uvicorn
 torch
 transformers
 sentencepiece
