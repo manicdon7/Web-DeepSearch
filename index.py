@@ -1,8 +1,9 @@
-# api/index.py
+# index.py
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from transformers import pipeline, set_seed
 import torch
+import uvicorn
 
 # --- App and Model Initialization ---
 app = FastAPI()
@@ -35,6 +36,10 @@ def get_chunks(text: str, max_words: int):
 def read_root():
     return {"message": "AI Instruction API is running! Use the /instruct endpoint."}
 
+@app.get("/healthz")
+def health_check():
+    return {"status": "ok"}
+
 @app.post("/instruct")
 def process_instruction(request: InstructRequest):
     """
@@ -64,4 +69,5 @@ def process_instruction(request: InstructRequest):
         print(f"[ERROR] An exception occurred: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-# Note: Do NOT include uvicorn.run or any __main__ block for Vercel compatibility.
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=10000)
