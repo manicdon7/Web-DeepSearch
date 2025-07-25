@@ -1,4 +1,5 @@
-import pollinations as ai
+import app.pollinations as ai
+
 
 def get_ai_synthesis(query: str, sources: list[dict]):
     """
