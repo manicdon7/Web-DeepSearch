@@ -1,12 +1,5 @@
 import pollinations as ai
 
-# --- MONKEY PATCH TO FIX LIBRARY BUG ---
-# The pollinations.ai library has a bug in its version checker that crashes
-# the app. We disable the faulty function by replacing it with one that
-# does nothing. This must be done immediately after the import.
-ai.get_latest = lambda: None
-# --- END OF PATCH ---
-
 def get_ai_synthesis(query: str, sources: list[dict]):
     """
     Synthesizes a comprehensive answer from multiple sources using an AI model.

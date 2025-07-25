@@ -1,3 +1,14 @@
+try:
+    from pollinations.helpers import version_check
+    version_check.get_latest = lambda: None
+    print("Successfully applied monkey patch to pollinations.ai.")
+except (ImportError, AttributeError):
+    # This might happen if the library structure changes in the future.
+    # For now, we assume it exists and proceed.
+    print("Could not apply patch to pollinations.ai. Proceeding with caution.")
+# --- END OF PATCH ---
+
+
 from fastapi import FastAPI, HTTPException
 from .model import QueryRequest, QueryResponse
 from . import search_client
