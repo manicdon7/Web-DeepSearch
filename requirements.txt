@@ -1,6 +1,11 @@
-cmake
 fastapi
-uvicorn
-torch
-transformers
-sentencepiece
+uvicorn[standard]
+requests
+beautifulsoup4
+autoscraper
+pollinations.ai
+packaging
+pydantic-settings
+duckduckgo-search
+ddgs
+cloudscraper 
