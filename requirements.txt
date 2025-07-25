@@ -4,6 +4,7 @@ requests
 beautifulsoup4
 autoscraper
 pollinations.ai
+pollinations
 packaging
 pydantic-settings
 duckduckgo-search
