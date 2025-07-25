@@ -1,37 +1,48 @@
+import importlib.util
 import os
 
-# The path to the problematic file inside the Vercel build environment,
-# which we found in the deployment error log.
-file_to_patch = '/var/task/pollinations/__init__.py'
-
-def patch_file(file_path):
+def apply_patch():
     """
-    Finds the get_latest() call in the specified file and comments it out.
+    Finds the installed 'pollinations' package and comments out the
+    faulty get_latest() call in its __init__.py file.
     """
-    print(f"Attempting to patch file: {file_path}")
-    if not os.path.exists(file_path):
-        print(f"Error: File not found at {file_path}. Cannot apply patch.")
-        return
-
     try:
-        with open(file_path, 'r') as f:
+        # Dynamically find the location of the installed package
+        spec = importlib.util.find_spec("pollinations")
+        if spec is None or spec.origin is None:
+            print("Error: Could not find the 'pollinations' package location.")
+            exit(1) # Exit with an error code to fail the build
+
+        file_to_patch = spec.origin
+        print(f"Found 'pollinations' __init__.py at: {file_to_patch}")
+
+        with open(file_to_patch, 'r') as f:
             lines = f.readlines()
 
+        # Check if the file is already patched to avoid redundant edits
         if any("# get_latest()" in line for line in lines):
-            print("Patch has already been applied. Exiting.")
+            print("Patch appears to be already applied. No action needed.")
             return
 
-        with open(file_path, 'w') as f:
+        # Rewrite the file with the faulty line commented out
+        patched = False
+        with open(file_to_patch, 'w') as f:
             for line in lines:
-                # Find the exact line that calls the function and comment it out
                 if "get_latest()" in line and not line.strip().startswith('#'):
                     f.write("# " + line)
-                    print(f"Successfully commented out line: {line.strip()}")
+                    print(f"Success: Commented out line: '{line.strip()}'")
+                    patched = True
                 else:
                     f.write(line)
-        print("File patching was successful.")
+        
+        if not patched:
+            print("Warning: The line 'get_latest()' was not found in the file.")
+        
+        print("Patching process completed.")
+
     except Exception as e:
-        print(f"An unexpected error occurred while patching the file: {e}")
+        print(f"An unexpected error occurred during the patching process: {e}")
+        exit(1) # Exit with an error code
 
 if __name__ == "__main__":
-    patch_file(file_to_patch)
+    apply_patch()
