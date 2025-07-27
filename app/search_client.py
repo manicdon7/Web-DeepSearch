@@ -2,11 +2,20 @@ from ddgs import DDGS
 from . import scraper
 
 DOMAIN_BLOCKLIST = [
-    "linkedin.com", "youtube.com", "facebook.com", 
-    "twitter.com", "instagram.com"
+    "instagram.com",
+    "tiktok.com",
+    "youtube.com",
+    "vimeo.com",
+    "dailymotion.com",
+    "pornhub.com",
+    "xvideos.com",
+    "xnxx.com",
+    "ebay.com",
+    "aliexpress.com",
+    "fandom.com"
 ]
 
-def search_and_scrape_multiple_sources(query: str, num_sources: int = 3) -> list[dict]:
+def search_and_scrape_multiple_sources(query: str, num_sources: int = 5) -> list[dict]:
     """
     Performs a web search, scrapes multiple pages, and returns their content.
     
@@ -15,7 +24,7 @@ def search_and_scrape_multiple_sources(query: str, num_sources: int = 3) -> list
         num_sources: The target number of successful scrapes.
     
     Returns:
-        A list of dictionaries, where each dict contains the 'url' and 'content'.
+        A list of dictionaries, where each dict contains the scraped data.
     """
     scraped_sources = []
     try:
@@ -38,13 +47,14 @@ def search_and_scrape_multiple_sources(query: str, num_sources: int = 3) -> list
                 print(f"Attempting to scrape: {url}")
                 scraped_data = scraper.scrape_url(url)
                 
-                if scraped_data and scraped_data["content"].strip():
+                if scraped_data and scraped_data["main_content"].strip():
                     print(f"Successfully scraped: {url}")
                     scraped_sources.append(scraped_data)
                     # Stop once we have collected enough sources.
                     if len(scraped_sources) >= num_sources:
                         break
             
+            # This return statement is now correctly placed to return the full list.
             return scraped_sources
 
     except Exception as e:

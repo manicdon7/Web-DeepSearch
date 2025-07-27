@@ -1,16 +1,39 @@
 import time
 import pollinations as ai
+from huggingface_hub import InferenceClient
+from .config import settings
 
-def get_ai_synthesis(query: str, sources: list[dict], max_retries: int = 3, backoff_factor: float = 2.0) -> str:
+def huggingface_fallback(prompt: str) -> str | None:
     """
-    Synthesizes a comprehensive answer using Pollinations.ai, with robust
-    retry logic for transient server errors like '502 Bad Gateway'.
+    Uses the Hugging Face Inference API as a fallback if Pollinations fails.
     """
-    # 1. Build the prompt from the gathered sources
+    print("Pollinations failed. Falling back to Hugging Face Inference API...")
+    try:
+        # Initialize the client with your token from the settings
+        client = InferenceClient(token=settings.huggingface_token)
+        
+        # Call a powerful, open-source model like Mistral-7B
+        response = client.chat_completion(
+            messages=[
+                {"role": "user", "content": prompt}
+            ],
+            model="mistralai/Mistral-7B-Instruct-v0.2",
+            max_tokens=512,  # Maximum number of tokens to generate in the response
+        )
+        print(response.choices[0].message.content.strip())
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        print(f"Hugging Face fallback also failed: {e}")
+        return None # Return None on failure
+
+def get_ai_synthesis(query: str, sources: list[dict], max_retries: int = 5, backoff_factor: float = 2.0) -> str:
+    """
+    Synthesizes an answer using Pollinations.ai, with a fallback to Hugging Face.
+    """
     context = ""
     for i, source in enumerate(sources, start=1):
         context += f"--- Source {i} (from {source['url']}) ---\n"
-        context += source["content"][:2000] + "\n\n"
+        context += source["main_content"][:2000] + "\n\n"
 
     prompt = (
         "You are a helpful research assistant. Your goal is to provide a single, "
@@ -24,28 +47,25 @@ def get_ai_synthesis(query: str, sources: list[dict], max_retries: int = 3, back
         "answer to the user's question:"
     )
 
-    # 2. Attempt to call the AI model with an exponential backoff retry strategy
+    # --- Attempt 1: Pollinations.ai with retries ---
     model = ai.Text(model="openai")
     for attempt in range(max_retries):
         try:
-            # If the call succeeds, return the answer immediately
             return model(prompt)
         except Exception as e:
             err_str = str(e).lower()
-            # Check for specific, retry-able errors (e.g., 5xx server errors)
             is_retryable = "502" in err_str or "bad gateway" in err_str or "server error" in err_str
-
             if is_retryable and attempt < max_retries - 1:
-                # Calculate wait time with exponential backoff (e.g., 2s, 4s, 8s)
                 wait_time = backoff_factor ** (attempt + 1)
-                print(
-                    f"Pollinations.ai server error. Retrying in {wait_time:.1f}s... "
-                    f"(Attempt {attempt + 1}/{max_retries})"
-                )
+                print(f"Pollinations.ai server error. Retrying in {wait_time:.1f}s...")
                 time.sleep(wait_time)
             else:
-                # If it's the last attempt or a non-retryable error, fail permanently
-                print(f"Pollinations.ai final error after {attempt + 1} attempts: {e}")
-                break  # Exit the loop to return the failure message
+                break # Exit loop if error is not retryable or retries are exhausted
 
-    return "Could not generate an answer after multiple attempts."
+    # --- Attempt 2: Hugging Face Fallback ---
+    answer = huggingface_fallback(prompt)
+    if answer:
+        return answer
+
+    # If all services fail
+    return "Could not generate an answer after multiple attempts from all available services."

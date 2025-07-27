@@ -7,6 +7,8 @@ pollinations.ai
 pollinations
 packaging
 pydantic-settings
+python-dotenv
 duckduckgo-search
 ddgs
+urllib3
 cloudscraper 
