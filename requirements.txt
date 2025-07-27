@@ -11,4 +11,5 @@ python-dotenv
 duckduckgo-search
 ddgs
 urllib3
+huggingface_hub
 cloudscraper 
