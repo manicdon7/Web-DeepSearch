@@ -13,3 +13,6 @@ ddgs
 urllib3
 huggingface_hub
 cloudscraper 
+setuptools
+wheel
+spacy
