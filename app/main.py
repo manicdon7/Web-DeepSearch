@@ -29,9 +29,8 @@ async def process_query(request: QueryRequest):
     print(f"Received query: '{query}'")
 
     # Step 1: Search and scrape multiple sources.
-    # We aim for 3 sources for a balance of quality and speed.
-    # Increase this number if you need more depth, but the response will be slower.
-    scraped_sources = search_client.search_and_scrape_multiple_sources(query, num_sources=5)
+    # Search as many sites as possible without artificial limits
+    scraped_sources = search_client.search_and_scrape_multiple_sources(query)
     
     if not scraped_sources:
         raise HTTPException(
@@ -52,3 +51,7 @@ async def process_query(request: QueryRequest):
 @app.get("/", summary="Root endpoint")
 async def read_root():
     return {"message": "Welcome to the Multi-Source Research Agent API!"}
+
+@app.get("/ping", summary="Health check endpoint")
+async def ping():
+    return {"status": "ok", "message": "pong"}

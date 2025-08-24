@@ -15,13 +15,12 @@ DOMAIN_BLOCKLIST = [
     "fandom.com"
 ]
 
-def search_and_scrape_multiple_sources(query: str, num_sources: int = 5) -> list[dict]:
+def search_and_scrape_multiple_sources(query: str) -> list[dict]:
     """
-    Performs a web search, scrapes multiple pages, and returns their content.
+    Performs a web search, scrapes all available pages, and returns their content.
     
     Args:
         query: The user's search query.
-        num_sources: The target number of successful scrapes.
     
     Returns:
         A list of dictionaries, where each dict contains the scraped data.
@@ -29,14 +28,14 @@ def search_and_scrape_multiple_sources(query: str, num_sources: int = 5) -> list
     scraped_sources = []
     try:
         with DDGS() as ddgs:
-            # Fetch more results to have plenty of candidates to try.
-            search_results = list(ddgs.text(query, max_results=15))
+            # Fetch as many results as possible
+            search_results = list(ddgs.text(query, max_results=50))
 
             if not search_results:
                 print("No search results found.")
                 return []
 
-            # Iterate through results to find the first N we can actually scrape.
+            # Iterate through all results and scrape all valid sources
             for result in search_results:
                 url = result['href']
                 
@@ -50,11 +49,8 @@ def search_and_scrape_multiple_sources(query: str, num_sources: int = 5) -> list
                 if scraped_data and scraped_data["main_content"].strip():
                     print(f"Successfully scraped: {url}")
                     scraped_sources.append(scraped_data)
-                    # Stop once we have collected enough sources.
-                    if len(scraped_sources) >= num_sources:
-                        break
             
-            # This return statement is now correctly placed to return the full list.
+            # Return all scraped sources without artificial limits
             return scraped_sources
 
     except Exception as e:
