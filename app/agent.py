@@ -24,7 +24,7 @@ def huggingface_fallback(prompt: str) -> str | None:
         return response.choices[0].message.content.strip()
     except Exception as e:
         print(f"Hugging Face fallback also failed: {e}")
-        return None # Return None on failure
+        return None
 
 def get_ai_synthesis(query: str, sources: list[dict], max_retries: int = 5, backoff_factor: float = 2.0) -> str:
     """
@@ -64,6 +64,7 @@ def get_ai_synthesis(query: str, sources: list[dict], max_retries: int = 5, back
 
     # --- Attempt 2: Hugging Face Fallback ---
     answer = huggingface_fallback(prompt)
+    print(answer)
     if answer:
         return answer
 
