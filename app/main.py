@@ -31,6 +31,7 @@ async def process_query(request: QueryRequest):
     # Step 1: Search and scrape multiple sources.
     # Search as many sites as possible without artificial limits
     scraped_sources = search_client.search_and_scrape_multiple_sources(query)
+    print(scraped_sources)
     
     if not scraped_sources:
         raise HTTPException(
@@ -40,6 +41,7 @@ async def process_query(request: QueryRequest):
 
     # Step 2: Generate a synthesized answer from the gathered content.
     answer = agent.get_ai_synthesis(query, scraped_sources)
+    print(answer)
     if answer == "Could not generate an answer.":
         raise HTTPException(status_code=500, detail="Content was scraped, but the AI agent failed to generate an answer.")
     
