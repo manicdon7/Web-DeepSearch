@@ -1,7 +1,6 @@
 from pydantic import BaseModel, HttpUrl
 from typing import List
 
-# --- Models for Real-Time URL Processing (can be kept or removed) ---
 class CrawlRequest(BaseModel):
     url: HttpUrl
 
