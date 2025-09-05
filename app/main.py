@@ -3,7 +3,6 @@ try:
     version_check.get_latest = lambda: None
     print("Successfully applied monkey patch to pollinations.ai.")
 except (ImportError, AttributeError):
-    # This might happen if the library structure changes in the future.
     # For now, we assume it exists and proceed.
     print("Could not apply patch to pollinations.ai. Proceeding with caution.")
 
@@ -16,7 +15,7 @@ from . import agent
 app = FastAPI(
     title="Multi-Source Research Agent API",
     description="An API that searches the web, scrapes multiple sources, and synthesizes a comprehensive answer.",
-    version="4.0.0"
+    version="1.0.0"
 )
 
 @app.post("/query/", response_model=QueryResponse, summary="Get a synthesized answer from multiple web sources")
