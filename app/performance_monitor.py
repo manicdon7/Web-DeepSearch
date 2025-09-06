@@ -4,12 +4,18 @@ Performance monitoring and metrics collection for the search optimization API.
 
 import time
 import logging
-import psutil
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 from collections import defaultdict, deque
 from threading import Lock
 from contextlib import contextmanager
+
+# Optional psutil import
+try:
+    import psutil
+    PSUTIL_AVAILABLE = True
+except ImportError:
+    PSUTIL_AVAILABLE = False
 
 from .model import PerformanceMetrics, SystemMetrics
 

@@ -7,9 +7,16 @@ except (ImportError, AttributeError):
     print("Could not apply patch to pollinations.ai. Proceeding with caution.")
 
 import logging
-import psutil
 from datetime import datetime
 from typing import Dict, Any
+
+# Optional psutil import for system monitoring
+try:
+    import psutil
+    PSUTIL_AVAILABLE = True
+except ImportError:
+    PSUTIL_AVAILABLE = False
+    logging.warning("psutil not available - system monitoring will be limited")
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -157,17 +164,30 @@ async def health_check():
         system_metrics = performance_monitor.get_system_metrics()
         uptime = performance_monitor.get_uptime()
         
-        # Get system resource information
-        cpu_percent = psutil.cpu_percent(interval=1)
-        memory = psutil.virtual_memory()
-        disk = psutil.disk_usage('/')
+        # Get system resource information (with fallback if psutil not available)
+        if PSUTIL_AVAILABLE:
+            cpu_percent = psutil.cpu_percent(interval=0.1)  # Reduced interval for faster response
+            memory = psutil.virtual_memory()
+            disk = psutil.disk_usage('/')
+        else:
+            # Fallback values when psutil is not available
+            cpu_percent = 0.0
+            memory = type('Memory', (), {
+                'percent': 0.0, 
+                'available': 0
+            })()
+            disk = type('Disk', (), {
+                'percent': 0.0, 
+                'free': 0
+            })()
         
         system_info = {
             "cpu_usage_percent": cpu_percent,
             "memory_usage_percent": memory.percent,
-            "memory_available_gb": round(memory.available / (1024**3), 2),
+            "memory_available_gb": round(memory.available / (1024**3), 2) if memory.available > 0 else 0.0,
             "disk_usage_percent": disk.percent,
-            "disk_free_gb": round(disk.free / (1024**3), 2)
+            "disk_free_gb": round(disk.free / (1024**3), 2) if disk.free > 0 else 0.0,
+            "psutil_available": PSUTIL_AVAILABLE
         }
         
         # Check component status (placeholder - would integrate with actual components)
