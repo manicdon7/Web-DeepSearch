@@ -1,30 +1,17 @@
-# Core FastAPI dependencies
-fastapi>=0.104.0
-uvicorn[standard]>=0.24.0
-
-# Web scraping and requests
-requests>=2.31.0
-beautifulsoup4>=4.12.0
-autoscraper>=1.1.14
-cloudscraper>=1.2.71
-urllib3>=2.0.0
-
-# AI and ML dependencies
-huggingface_hub>=0.19.0
-
-# Pollinations - using specific version compatible with Python 3.9
-pollinations==1.0.3
-
-# Search engines
-duckduckgo-search>=3.9.0
-
-# Configuration and utilities
-pydantic-settings>=2.0.0
-python-dotenv>=1.0.0
-packaging>=23.0
-
-# Additional typing support for Python 3.9 compatibility
-typing-extensions>=4.8.0
-
-# Optional system monitoring (comment out if not available in deployment)
-# psutil>=5.9.0
+fastapi
+uvicorn[standard]
+requests
+beautifulsoup4
+autoscraper
+pollinations.ai
+pollinations
+packaging
+pydantic-settings
+python-dotenv
+duckduckgo-search
+ddgs
+urllib3
+huggingface_hub
+cloudscraper 
+pytest
+psutil
