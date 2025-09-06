@@ -13,4 +13,3 @@ ddgs
 urllib3
 huggingface_hub
 cloudscraper 
-pytest
