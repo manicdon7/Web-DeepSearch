@@ -33,7 +33,7 @@ from . import agent
 app = FastAPI(
     title="Multi-Source Research Agent API",
     description="An optimized API that searches the web, scrapes multiple sources, and synthesizes comprehensive answers with intelligent performance monitoring.",
-    version="5.0.0"
+    version="1.1.0"
 )
 
 # Add CORS middleware
