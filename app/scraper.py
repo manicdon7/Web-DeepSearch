@@ -8,11 +8,6 @@ from typing import Dict, List, Optional, Tuple
 from app.optimization_models import ContentQuality, EnhancedSource
 
 def extract_main_content(soup: BeautifulSoup) -> Tuple[str, Dict[str, float]]:
-    """
-    Tries to find the main article content of a page, ignoring noise like
-    nav bars, footers, and ads. It checks for common semantic tags.
-    Returns both content and quality indicators.
-    """
     quality_indicators = {}
     
     # Look for common main content containers in order of preference
